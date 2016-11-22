@@ -7,26 +7,40 @@ This library is no longer maintained. The mobile app platform is now leaning tow
 
 I discourage using this library and encourage using this new standard instead.
 
-# deep-link.js
+# deeplink.js
 
-**deep-link.js** is designed to add deep links to the web in an easy and stable way.
+**deeplink.js** is designed to add deep links to the web in an easy and stable way.
 
 Mobile deep links are links that refer to apps instead of another web page. Opening things in apps can vastly improve a user’s experience.
 
-## Install
-
-	bower install deep-link.js
-
 ## Usage
 
-See [https://timseverien.com/deep-link.js/](https://timseverien.com/deep-link.js/)
+```html
+<a href="..."               // Fallback  (and unsupported OSs)
+    data-app="..."          // Deep link (cross-OS)
+    data-app-[os]="..."     // Deep link (OS-specific)
+    data-store-[os]="...">  // Store ID  (OS-specific)
+```
+
+Mobile deep links are not intended for desktops, so there are several fallbacks, in this order:
+
+1. Open the deep link
+2. Open the app in the store (if present)
+3. Go to the href attribute (if present)
+4. Absolutely nothing
+The more information you supply, the better.
+
 
 # License
 
-deep-link.js is licensed under the MIT license.
+deeplink.js is licensed under the MIT license.
 [http://opensource.org/licenses/MIT](http://opensource.org/licenses/MIT)
 
 # Changelog
+
+## 0.2.1
+- 删除bower支持；
+- 适当重构
 
 ## 0.1.1
 - Add intent for modern Android browsers

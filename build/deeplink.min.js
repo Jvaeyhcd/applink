@@ -1,6 +1,5 @@
 /*!
- * Deep-link.js
- * https://timseverien.com/projects/deep-link/
+ * deeplink.js
  *
  * Copyright 2015
  * Released under MIT license

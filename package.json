@@ -1,16 +1,15 @@
 {
-  "name": "deep-link.js",
-  "version": "0.1.1",
+  "name": "deeplink",
+  "version": "0.2.2",
   "description": "A tool designer for mobile deep links",
-  "main": "deep-link.js",
+  "main": "deeplink.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/timseverien/deep-link.js.git"
+    "url": "https://github.com/bystep15/deeplink.git"
   },
   "keywords": [
     "mobile",
-    "deep",
-    "link",
+    "deeplink",
     "app"
   ],
   "author": {
@@ -18,11 +17,17 @@
     "email": "timseverien@gmail.com",
     "url": "http://timseverien.com"
   },
+  "contributors": [
+    {
+      "name": "Hu Jiwei",
+      "email": "hu_jiwei@foxmail.com",
+      "url": "http://testudy.cc/"
+    }
+  ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/timseverien/deep-link.js/issues"
+    "url": "https://github.com/bystep15/deeplink/issues"
   },
-  "homepage": "https://timseverien.com/projects/deep-link/",
   "devDependencies": {
     "gulp": "^3.8.10",
     "gulp-bump": "^0.1.11",
