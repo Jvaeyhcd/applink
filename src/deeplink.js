@@ -5,154 +5,167 @@
  * Released under MIT license
  */
 
-(function() {
-	'use strict';
+(function () {
+    'use strict';
 
-	/****************************************************************
-	 * VARIABLES
-	 ****************************************************************/
+    var agent = '',
+        hidden,
+        visibilityChange,
+        delay = 1200,
+        clicked = false,
+        timeout = null;
 
-	var delay = 1200,
-		OSs = {
-			android: {
-				store_prefix: 'https://play.google.com/store/apps/details?id=',
-				test: /Android/i
-			},
+    (function () {
+        // 初始化agent
+        var ua = navigator.userAgent;
 
-			iOS: {
-				store_prefix: 'https://itunes.apple.com/en/app/id',
-				test: /iPhone|iPad|iPod/i
-			}
-		};
+        if (!!ua.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)) {
+            agent = 'ios';
+        } else {
+            // 忽略WinPhone
+            agent = 'android';
+        }
+
+        if (!!/\bMicroMessenger\b/i.test(ua) || !!/\bQQ\b/i.test(ua)) {
+            agent =  'qq-' + agent;
+        }
+    }());
+
+    (function initVisibilityProperty() {
+        // Set the name of the hidden property and the change event for visibility
+
+        if (document.hidden !== undefined) { // Opera 12.10 and Firefox 18 and later support
+            hidden = 'hidden';
+            visibilityChange = 'visibilitychange';
+        } else if (document.msHidden !== undefined) {
+            hidden = 'msHidden';
+            visibilityChange = 'msvisibilitychange';
+        } else if (document.webkitHidden !== undefined) {
+            hidden = 'webkitHidden';
+            visibilityChange = 'webkitvisibilitychange';
+        }
+    }());
 
 
-	/****************************************************************
-	 * FUNCTIONS
-	 ****************************************************************/
-
-	// Get user agent
-	function getUserAgent() {
-		var k;
-
-		for (k in OSs) {
-			if (navigator.userAgent.match(OSs[k].test)) {
-                return k;
+    function handleVisibilityChange() {
+        if (document[hidden]) {
+            // Triggered on blur
+            if (!clicked || !timeout) {
+                return;
             }
-		}
 
-		return '';
-	}
-
-	// Get current time in ms
-	function getTime() {
-		return Date().now();
-	}
-
-	function open(url) {
-		window.location.href = url;
-	}
-
-	function handleAndroidBrowsers(app, store, href, scheme) {
-	    // Android Mobile
-	    var isAndroidMobile = navigator.userAgent.indexOf('Android') > -1 &&
-	            navigator.userAgent.indexOf('Mozilla/5.0') > -1 &&
-	            navigator.userAgent.indexOf('AppleWebKit') > -1,
-	        // Android Browser (not Chrome)
-	        regExAppleWebKit = /AppleWebKit\/([\d.]+)/,
-	        resultAppleWebKitRegEx = regExAppleWebKit.exec(navigator.userAgent),
-	        appleWebKitVersion = (resultAppleWebKitRegEx === null ? null : parseFloat(resultAppleWebKitRegEx[1])),
-	        isAndroidBrowser = isAndroidMobile && appleWebKitVersion !== null && appleWebKitVersion > 500;
-
-	    if(isAndroidBrowser) {
-	        return 'intent:' + app.split(':')[1] + '#Intent;scheme=' + scheme + ';package=' +
-	            store + ';S.browser_fallback_url=' + encodeURI(href);
-	    } else {
-	        return app;
-	    }
-	}
-
-	// Parse a single element
-	function parseElement(el) {
-		var clicked, timeout,
-			OS = getUserAgent(),
-			OSAttr = OS.toLowerCase(),
-
-			href = el.getAttribute('href'),
-			app = (
-				el.getAttribute('data-app-' + OSAttr) ||
-				el.getAttribute('data-app')
-			),
-			store = (
-				el.getAttribute('data-store-' + OSAttr) ||
-				el.getAttribute('data-store')
-			),
-			scheme = (
-				el.getAttribute('data-android-scheme')
-			);
-			
-
-		if(!app) return;
-		if(!href) el.setAttribute('href', app);
-
-		if(OS && app) {
-			// Hijack click event
-			el.onclick = function(e) {
-				e.preventDefault();
-				e.stopImmediatePropagation();
-
-				var win;
-
-				// Store start time
-				var start = getTime();
-				clicked = true;
-
-				// Timeout to detect if the link worked
-				timeout = setTimeout(function() {
-					// Check if any of the values are unset
-					if(!clicked || !timeout) return;
-
-					// Get current time
-					var now = getTime();
-
-					// Reset things
-					clicked = false;
-					timeout = null;
-
-					// Has the user left the screen? ABORT!
-					if(now - start >= delay * 2) return;
-
-					// Open store or original link
-					if(store) open(OSs[OS].store_prefix + store);
-					else if(href) open(href);
-				}, delay);
-
-				var finalURI = handleAndroidBrowsers(app, store, href, scheme);
-
-				// Go to app
-				win = open(finalURI);
-			};
-		} else if(!href || href === '#') {
-			// Apps are presumably not supported
-			el.style.display = 'none';
-		}
-
-		// Triggered on blur
-		visibly.onHidden(function() {
-			if(!clicked || !timeout) return;
-
-			// Reset everything
-			timeout = clearInterval(timeout);
-			clicked = false;
-		});
-	}
+            // Reset everything
+            clearInterval(timeout);
+            timeout = null;
+            clicked = false;
+        }
+    }
 
 
-	/****************************************************************
-	 * INITIALIZE
-	 ****************************************************************/
+    function handleAndroidBrowsers(href, deeplink) {
+        // Android Mobile
+        var isAndroidMobile = navigator.userAgent.indexOf('Android') > -1 &&
+                navigator.userAgent.indexOf('Mozilla/5.0') > -1 &&
+                navigator.userAgent.indexOf('AppleWebKit') > -1,
+            // Android Browser (not Chrome)
+            regExAppleWebKit = /AppleWebKit\/([\d.]+)/,
+            resultAppleWebKitRegEx = regExAppleWebKit.exec(navigator.userAgent),
+            appleWebKitVersion = (resultAppleWebKitRegEx === null ? null : parseFloat(resultAppleWebKitRegEx[1])),
+            isAndroidBrowser = isAndroidMobile && appleWebKitVersion !== null && appleWebKitVersion > 500;
 
-	var elements = document.getElementsByTagName('a'),
-		i = elements.length;
+        if (isAndroidBrowser) {
+            return 'intent:' + deeplink.split(':')[1] +
+                '#Intent;scheme=' + deeplink.split(':')[0] +
+                ';S.browser_fallback_url=' + encodeURI(href);
+        }
 
-	while(i--) parseElement(elements[i]);
-})();
+        return deeplink;
+    }
+
+
+    function open(url) {
+        window.location.href = url;
+    }
+
+
+    function addListener() {
+        document.body.addEventListener('click', function (e) {
+            // Hijack click event
+
+            var target = e.target,
+                deeplink = target.getAttribute('data-deeplink'),
+                start;
+
+            if (target.tagName !== 'a' || !deeplink || clicked || timeout) {
+                return;
+            }
+
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            // Store start time
+            start = Date.now();
+            clicked = true;
+
+            // Timeout to detect if the link worked
+            timeout = setTimeout(function () {
+                // Check if any of the values are unset
+                if (!clicked || !timeout) {
+                    return;
+                }
+
+                // Reset things
+                clicked = false;
+                timeout = null;
+
+                // Has the user left the screen? ABORT!
+                if (Date.now() - start >= delay * 2) {
+                    return;
+                }
+
+                open(target.href);
+            }, delay);
+
+            // Go to app
+            open(handleAndroidBrowsers(target.href, deeplink));
+        }, false);
+    }
+
+    function optimize(anchor) {
+        if (!anchor) {
+            return;
+        }
+
+        var href = anchor.getAttribute('data-href-' + agent);
+
+        if (!href) {
+            return;
+        }
+
+        anchor.href = href;
+    }
+
+
+    window.applink = {
+
+        init: function () {
+            var elements = document.getElementsByTagName('a'),
+                i;
+
+            for (i = elements.length - 1; i >= 0; i -= 0) {
+                optimize(elements[i]);
+            }
+
+            addListener();
+
+            if (document[hidden] !== undefined) {
+                // Handle page visibility change
+                document.addEventListener(visibilityChange, handleVisibilityChange, false);
+            }
+        },
+
+        optimize: optimize
+
+    };
+
+}());
