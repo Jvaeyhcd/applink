@@ -7,19 +7,22 @@ This library is no longer maintained. The mobile app platform is now leaning tow
 
 I discourage using this library and encourage using this new standard instead.
 
-# deeplink.js
+# applink.js
 
-**deeplink.js** is designed to add deep links to the web in an easy and stable way.
+**applink.js** is designed to add deep links to the web in an easy and stable way.
 
 Mobile deep links are links that refer to apps instead of another web page. Opening things in apps can vastly improve a user’s experience.
 
 ## Usage
 
 ```html
-<a href="..."               // Fallback  (and unsupported OSs)
-    data-app="..."          // Deep link (cross-OS)
-    data-app-[os]="..."     // Deep link (OS-specific)
-    data-store-[os]="...">  // Store ID  (OS-specific)
+<a class="fu-join"
+	data-deeplink="deep-link"						// App内跳转地址
+    href="download-link"							// 服务器端设置的根据UA判断的自动跳转链接，包含下面4中情况
+    data-href-android="android-download-link"		// Android包下载地址
+    data-href-ios="itunes-link"						// itunes地址
+    data-href-qq-android="myapp-link"				// 应用宝推广地址
+    data-href-qq-ios="myapp-link">立即打开</a>		// 应用宝推广地址
 ```
 
 Mobile deep links are not intended for desktops, so there are several fallbacks, in this order:
@@ -33,7 +36,7 @@ The more information you supply, the better.
 
 # License
 
-deeplink.js is licensed under the MIT license.
+applink.js is licensed under the MIT license.
 [http://opensource.org/licenses/MIT](http://opensource.org/licenses/MIT)
 
 # Changelog

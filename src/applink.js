@@ -1,5 +1,5 @@
 /*!
- * deeplink.js
+ * applink.js
  *
  * Copyright 2016
  * Released under MIT license

@@ -1,15 +1,15 @@
 {
-  "name": "deeplink",
+  "name": "applink",
   "version": "0.2.2",
   "description": "A tool designer for mobile deep links",
-  "main": "deeplink.js",
+  "main": "applink.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bystep15/deeplink.git"
+    "url": "https://github.com/bystep15/applink.git"
   },
   "keywords": [
     "mobile",
-    "deeplink",
+    "applink",
     "app"
   ],
   "author": {
@@ -26,7 +26,7 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bystep15/deeplink/issues"
+    "url": "https://github.com/bystep15/applink/issues"
   },
   "devDependencies": {
     "gulp": "^3.8.10",

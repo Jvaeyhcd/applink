@@ -16,11 +16,11 @@ gulp.task('build', function() {
 	])
 
 	// Build
-	.pipe(concat('deeplink.js'))
+	.pipe(concat('applink.js'))
 	.pipe(gulp.dest('build'))
 
 	// Minify
 	.pipe(uglify({ preserveComments: 'some' }))
-	.pipe(rename('deeplink.min.js'))
+	.pipe(rename('applink.min.js'))
 	.pipe(gulp.dest('build'));
 });
