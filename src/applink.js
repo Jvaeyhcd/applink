@@ -84,7 +84,7 @@
 
 
     function open(url) {
-        window.location.href = url;
+        location.href = url;
     }
 
 
