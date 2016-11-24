@@ -1,3 +1,4 @@
+/*jslint regexp: true */
 /*!
  * applink.js
  *
@@ -48,38 +49,15 @@
 
 
     function handleVisibilityChange() {
-        if (document[hidden]) {
-            // Triggered on blur
-            if (!clicked || !timeout) {
-                return;
-            }
-
-            // Reset everything
-            clearInterval(timeout);
-            timeout = null;
-            clicked = false;
-        }
-    }
-
-
-    function handleAndroidBrowsers(href, deeplink) {
-        // Android Mobile
-        var isAndroidMobile = navigator.userAgent.indexOf('Android') > -1 &&
-                navigator.userAgent.indexOf('Mozilla/5.0') > -1 &&
-                navigator.userAgent.indexOf('AppleWebKit') > -1,
-            // Android Browser (not Chrome)
-            regExAppleWebKit = /AppleWebKit\/([\d.]+)/,
-            resultAppleWebKitRegEx = regExAppleWebKit.exec(navigator.userAgent),
-            appleWebKitVersion = (resultAppleWebKitRegEx === null ? null : parseFloat(resultAppleWebKitRegEx[1])),
-            isAndroidBrowser = isAndroidMobile && appleWebKitVersion !== null && appleWebKitVersion > 500;
-
-        if (isAndroidBrowser) {
-            return 'intent:' + deeplink.split(':')[1] +
-                '#Intent;scheme=' + deeplink.split(':')[0] +
-                ';S.browser_fallback_url=' + encodeURI(href);
+        // Triggered on blur
+        if (!clicked || !timeout) {
+            return;
         }
 
-        return deeplink;
+        // Reset everything
+        clearInterval(timeout);
+        timeout = null;
+        clicked = false;
     }
 
 
@@ -96,7 +74,7 @@
                 deeplink = target.getAttribute('data-deeplink'),
                 start;
 
-            if (target.tagName !== 'a' || !deeplink || clicked || timeout) {
+            if (target.tagName.toLowerCase() !== 'a' || !deeplink || clicked || timeout) {
                 return;
             }
 
@@ -127,7 +105,7 @@
             }, delay);
 
             // Go to app
-            open(handleAndroidBrowsers(target.href, deeplink));
+            open(deeplink);
         }, false);
     }
 
@@ -152,7 +130,7 @@
             var elements = document.getElementsByTagName('a'),
                 i;
 
-            for (i = elements.length - 1; i >= 0; i -= 0) {
+            for (i = elements.length - 1; i >= 0; i -= 1) {
                 optimize(elements[i]);
             }
 
